@@ -1,0 +1,49 @@
+{
+  "name": "كلية النهضة",
+  "short_name": "النهضة",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b3b5c",
+  "theme_color": "#0b3b5c",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
+{
+  "name": "كلية النهضة الجديدة",
+  "short_name": "النهضة",
+  "description": "تطبيق كلية النهضة الجديدة للعلوم الطبية والتقنية",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a3d62",
+  "theme_color": "#0a3d62",
+  "icons": [
+    {
+      "src": "https://i.servimg.com/u/f52/20/64/69/74/aoi10.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://i.servimg.com/u/f52/20/64/69/74/aoi10.png.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://i.servimg.com/u/f52/20/64/69/74/1212.png",
+      "sizes": "1080x1920",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["education", "medical"],
+  "lang": "ar",
+  "dir": "rtl"
+}
