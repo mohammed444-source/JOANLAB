@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>الأخبار - متجر المعدات الطبية JOANLAB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', 'Segoe UI', sans-serif;
+        }
+        
+        body {
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            overflow: hidden;
+        }
+        
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.6;
+            animation: floatGlow 12s infinite ease-in-out;
+        }
+        
+        .glow-1 { width: 400px; height: 400px; background: radial-gradient(circle, #667eea, #764ba2); top: -100px; left: -100px; animation-delay: 0s; }
+        .glow-2 { width: 500px; height: 500px; background: radial-gradient(circle, #f093fb, #f5576c); bottom: -150px; right: -150px; animation-delay: 3s; }
+        .glow-3 { width: 350px; height: 350px; background: radial-gradient(circle, #4facfe, #00f2fe); top: 50%; left: 50%; transform: translate(-50%, -50%); animation-delay: 6s; }
+        .glow-4 { width: 300px; height: 300px; background: radial-gradient(circle, #fa709a, #fee140); bottom: 20%; left: 20%; animation-delay: 2s; }
+        .glow-5 { width: 450px; height: 450px; background: radial-gradient(circle, #a8edea, #fed6e3); top: 30%; right: 15%; animation-delay: 4s; }
+        
+        @keyframes floatGlow {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+            33% { transform: translate(30px, -30px) scale(1.1); opacity: 0.6; }
+            66% { transform: translate(-20px, 20px) scale(0.9); opacity: 0.5; }
+        }
+        
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: moveGrid 20s linear infinite;
+        }
+        
+        @keyframes moveGrid {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(40px, 40px); }
+        }
+        
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 60px;
+            padding: 10px 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .logo-nav {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-nav img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+            animation: pulse 2s infinite;
+        }
+        
+        .logo-nav span {
+            font-weight: 800;
+            color: #1e3a5f;
+            font-size: 1.2rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-links a {
+            color: #1e3a5f;
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-links a.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .nav-links a:hover {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .menu-toggle {
+            display: none;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            transition: 0.4s ease;
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 300px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(15px);
+            box-shadow: -5px 0 35px rgba(0,0,0,0.3);
+            z-index: 2001;
+            transition: 0.4s ease;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            border-radius: 30px 0 0 30px;
+        }
+        
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            color: #1e3a5f;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        
+        .sidebar-nav a.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .close-sidebar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 60px;
+        }
+        
+        .page-header h1 {
+            color: #1e3a5f;
+            font-size: 2.2rem;
+            font-weight: 800;
+        }
+        
+        .page-header p {
+            color: #4a627a;
+            font-size: 1.1rem;
+        }
+        
+        .news-ticker-section {
+            margin-bottom: 40px;
+        }
+        
+        .ticker-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 60px;
+            padding: 5px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .ticker-label {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+        
+        .ticker-wrapper {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            height: 60px;
+        }
+        
+        .ticker {
+            position: absolute;
+            white-space: nowrap;
+            animation: tickerScroll 25s linear infinite;
+            display: flex;
+            gap: 50px;
+        }
+        
+        .ticker-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            color: #1e3a5f;
+            font-weight: 600;
+        }
+        
+        .ticker-item i {
+            color: #764ba2;
+        }
+        
+        @keyframes tickerScroll {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        
+        .ticker-wrapper:hover .ticker {
+            animation-play-state: paused;
+        }
+        
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .news-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 32px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+        
+        .news-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 45px rgba(0,0,0,0.2);
+        }
+        
+        .news-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .news-content {
+            padding: 25px;
+        }
+        
+        .news-date {
+            color: #764ba2;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .news-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #1e3a5f;
+            margin-bottom: 12px;
+        }
+        
+        .news-excerpt {
+            color: #4a627a;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .news-readmore {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+        
+        .news-readmore:hover {
+            color: #764ba2;
+            gap: 12px;
+        }
+        
+        .latest-products-section {
+            margin-top: 40px;
+        }
+        
+        .section-title {
+            color: white;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .products-slider {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+        
+        .latest-product-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 28px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .latest-product-card:hover {
+            transform: translateY(-8px);
+            background: white;
+        }
+        
+        .latest-product-img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+        
+        .latest-product-info {
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .latest-product-name {
+            font-weight: 800;
+            color: #1e3a5f;
+            margin-bottom: 5px;
+        }
+        
+        .latest-product-price {
+            color: #764ba2;
+            font-weight: 700;
+        }
+        
+        .refresh-note {
+            text-align: center;
+            margin-top: 20px;
+            color: rgba(255,255,255,0.6);
+            font-size: 0.8rem;
+        }
+        
+        .footer {
+            margin-top: 60px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 40px;
+            padding: 35px 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        
+        .footer-section h4 {
+            color: #1e3a5f;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .footer-section p {
+            color: #4a627a;
+            line-height: 1.8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .footer-section i {
+            width: 30px;
+            color: #764ba2;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            color: #4a627a;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @media (max-width: 900px) {
+            .nav-links { display: none; }
+            .menu-toggle { display: block; }
+            .ticker-label span { display: none; }
+        }
+        
+        @media (max-width: 600px) {
+            .news-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="animated-bg">
+    <div class="glow-orb glow-1"></div>
+    <div class="glow-orb glow-2"></div>
+    <div class="glow-orb glow-3"></div>
+    <div class="glow-orb glow-4"></div>
+    <div class="glow-orb glow-5"></div>
+</div>
+<div class="grid-overlay"></div>
+
+<div class="container">
+    <div class="navbar">
+        <div class="logo-nav">
+            <img src="https://i.servimg.com/u/f52/20/64/69/74/61838510.png" alt="logo">
+            <span>JOANLAB</span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html"><i class="fas fa-home"></i> Home</a>
+            <a href="products.html"><i class="fas fa-box"></i> Products</a>
+            <a href="news.html" class="active"><i class="fas fa-newspaper"></i> News</a>
+            <a href="#about"><i class="fas fa-info-circle"></i> About us</a>
+            <a href="#download"><i class="fas fa-download"></i> Download</a>
+            <a href="#contact"><i class="fas fa-envelope"></i> Contact us</a>
+        </div>
+        <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+    </div>
+    
+    <div class="sidebar-overlay" id="sidebarOverlay">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="https://i.servimg.com/u/f52/20/64/69/74/61838510.png" alt="logo" style="width:45px;">
+                <button class="close-sidebar" id="closeSidebar"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="sidebar-nav">
+                <a href="index.html"><i class="fas fa-home"></i> Home</a>
+                <a href="products.html"><i class="fas fa-box"></i> Products</a>
+                <a href="news.html" class="active"><i class="fas fa-newspaper"></i> News</a>
+                <a href="#about"><i class="fas fa-info-circle"></i> About us</a>
+                <a href="#download"><i class="fas fa-download"></i> Download</a>
+                <a href="#contact"><i class="fas fa-envelope"></i> Contact us</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="page-header">
+        <h1><i class="fas fa-newspaper"></i> آخر الأخبار</h1>
+        <p>أحدث المستجدات والعروض والمنتجات الجديدة</p>
+    </div>
+    
+    <div class="news-ticker-section">
+        <div class="ticker-container">
+            <div class="ticker-label">
+                <i class="fas fa-bullhorn"></i>
+                <span>أحدث الأخبار</span>
+            </div>
+            <div class="ticker-wrapper">
+                <div class="ticker" id="newsTicker">
+                    <div class="ticker-item">⏳ جاري تحميل الأخبار...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="news-grid" id="newsGrid">
+        <div style="text-align:center; padding:40px; grid-column:1/-1;">⏳ جاري تحميل الأخبار...</div>
+    </div>
+    
+    <div class="latest-products-section">
+        <h2 class="section-title"><i class="fas fa-box-open"></i> أحدث المنتجات</h2>
+        <div class="products-slider" id="latestProducts">
+            <div style="color:white; text-align:center;">⏳ جاري التحميل...</div>
+        </div>
+    </div>
+    
+    <div class="refresh-note">
+        🔄 يتم تحديث الأخبار والمنتجات تلقائياً كل 30 ثانية
+    </div>
+    
+    <div class="footer">
+        <div class="footer-section">
+            <h4><i class="fas fa-map-marker-alt"></i> العنوان في الصين</h4>
+            <p>JOANLAB Building, No.181 Gangfeng Road, Huzhou City, Zhejiang Province, China</p>
+        </div>
+        <div class="footer-section">
+            <h4><i class="fas fa-map-marker-alt"></i> العنوان في ليبيا</h4>
+            <p>طبرق - الميدان</p>
+        </div>
+        <div class="footer-section">
+            <h4><i class="fas fa-phone-alt"></i> التواصل</h4>
+            <p><i class="fas fa-phone"></i> <a href="tel:+218911358836">+218-911-358836</a></p>
+            <p><i class="fas fa-envelope"></i> <a href="mailto:moh@joanlab.com">moh@joanlab.com</a></p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2024 JOANLAB - متجر المعدات الطبية - جميع الحقوق محفوظة</p>
+    </div>
+</div>
+
+<script>
+    // ===== القائمة الجانبية =====
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const closeSidebar = document.getElementById('closeSidebar');
+    
+    function openSidebar() {
+        sidebarOverlay.style.right = '0';
+        sidebar.style.right = '0';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeSidebarFunc() {
+        sidebarOverlay.style.right = '-100%';
+        sidebar.style.right = '-320px';
+        document.body.style.overflow = '';
+    }
+    
+    menuToggle.addEventListener('click', openSidebar);
+    closeSidebar.addEventListener('click', closeSidebarFunc);
+    sidebarOverlay.addEventListener('click', (e) => { if (e.target === sidebarOverlay) closeSidebarFunc(); });
+    
+    // ===== إعدادات الروابط =====
+    // رابط CSV الخاص بشيت الأخبار (بعد نشره كـ CSV)
+    const NEWS_CSV_URL = "https://docs.google.com/spreadsheets/d/1LJQ-6NZ3k3OeUrroNrIa_vbS-leG_Xtdzlva91GNYKU/export?format=csv&gid=1318479844";
+    
+    // رابط CSV لشيت المنتجات
+    const PRODUCTS_CSV_URL = "https://docs.google.com/spreadsheets/d/1iekZBtcncliCPijyhbeniDlvq9hhSm0GIZt7rH4hbBg/export?format=csv&gid=1456554791";
+    
+    let allNews = [];
+    
+    // ===== جلب الأخبار =====
+    async function loadNews() {
+        try {
+            const response = await fetch(NEWS_CSV_URL, { cache: "no-store" });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const csvText = await response.text();
+            allNews = parseNewsCSV(csvText);
+            
+            displayTicker(allNews);
+            displayNewsCards(allNews);
+        } catch (error) {
+            console.error("خطأ في تحميل الأخبار:", error);
+            document.getElementById("newsGrid").innerHTML = `
+                <div style="grid-column:1/-1; text-align:center; padding:40px; background:rgba(255,255,255,0.9); border-radius:40px;">
+                    ⚠️ خطأ في تحميل الأخبار (${error.message})<br>
+                    <small>تأكد من نشر شيت الأخبار كـ CSV: File → Share → Publish to web → CSV</small>
+                </div>`;
+            document.getElementById("newsTicker").innerHTML = `<div class="ticker-item">⚠️ لا توجد أخبار حالياً</div>`;
+        }
+    }
+    
+    function parseNewsCSV(csv) {
+        const rows = csv.split(/\r?\n/);
+        if (rows.length < 2) return [];
+        
+        const headers = rows[0].split(",").map(h => h.trim());
+        const idIndex = headers.findIndex(h => h === "ID");
+        const titleIndex = headers.findIndex(h => h === "Title");
+        const dateIndex = headers.findIndex(h => h === "Date");
+        const excerptIndex = headers.findIndex(h => h === "Excerpt");
+        const imageIndex = headers.findIndex(h => h === "Image URL");
+        const statusIndex = headers.findIndex(h => h === "Status");
+        
+        const news = [];
+        for (let i = 1; i < rows.length; i++) {
+            if (!rows[i].trim()) continue;
+            const cols = rows[i].split(",");
+            
+            let status = "Active";
+            if (statusIndex !== -1 && cols[statusIndex]) {
+                status = cols[statusIndex].trim();
+            }
+            if (status !== "Active") continue;
+            
+            const id = idIndex !== -1 ? cols[idIndex]?.trim() : i;
+            const title = titleIndex !== -1 ? cols[titleIndex]?.trim() : "خبر جديد";
+            const date = dateIndex !== -1 ? cols[dateIndex]?.trim() : "";
+            const excerpt = excerptIndex !== -1 ? cols[excerptIndex]?.trim() : "اضغط للمزيد من التفاصيل";
+            let image = imageIndex !== -1 ? cols[imageIndex]?.trim() : "";
+            
+            if (!image) image = "https://via.placeholder.com/400x200?text=JOANLAB";
+            
+            news.push({ id, title, date, excerpt, image });
+        }
+        return news;
+    }
+    
+    function displayTicker(news) {
+        const tickerContainer = document.getElementById('newsTicker');
+        if (news.length === 0) {
+            tickerContainer.innerHTML = `<div class="ticker-item">📢 لا توجد أخبار حالياً</div>`;
+            return;
+        }
+        
+        const tickerItems = news.map(item => `
+            <span class="ticker-item">
+                <i class="fas fa-star-of-life"></i>
+                ${escapeHtml(item.title)}
+            </span>
+        `).join('');
+        
+        tickerContainer.innerHTML = tickerItems + tickerItems;
+    }
+    
+    function displayNewsCards(news) {
+        const newsGrid = document.getElementById('newsGrid');
+        if (news.length === 0) {
+            newsGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; background:rgba(255,255,255,0.9); border-radius:40px;">📭 لا توجد أخبار حالياً</div>`;
+            return;
+        }
+        
+        newsGrid.innerHTML = news.map(item => `
+            <div class="news-card">
+                <img class="news-image" src="${item.image}" alt="${escapeHtml(item.title)}" onerror="this.src='https://via.placeholder.com/400x200?text=صورة+الخبر'">
+                <div class="news-content">
+                    <div class="news-date">
+                        <i class="fas fa-calendar-alt"></i> ${item.date || "تاريخ غير محدد"}
+                    </div>
+                    <h3 class="news-title">${escapeHtml(item.title)}</h3>
+                    <p class="news-excerpt">${escapeHtml(item.excerpt)}</p>
+                    <a href="#" class="news-readmore" onclick="alert('سيتم إضافة التفاصيل قريباً'); return false;">
+                        اقرأ المزيد <i class="fas fa-arrow-left"></i>
+                    </a>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // ===== جلب المنتجات =====
+    async function loadLatestProducts() {
+        try {
+            const response = await fetch(PRODUCTS_CSV_URL, { cache: "no-store" });
+            if (!response.ok) throw new Error();
+            const csvText = await response.text();
+            const products = parseProductsCSV(csvText);
+            const latestProducts = products.slice(0, 4);
+            displayLatestProducts(latestProducts);
+        } catch (error) {
+            console.error("خطأ في تحميل المنتجات");
+            document.getElementById("latestProducts").innerHTML = `<div style="color:white; text-align:center;">⚠️ لا توجد منتجات</div>`;
+        }
+    }
+    
+    function parseProductsCSV(csv) {
+        const rows = csv.split(/\r?\n/);
+        if (rows.length < 2) return [];
+        const headers = rows[0].split(",").map(h => h.trim());
+        const nameIndex = headers.findIndex(h => h === "Product Name");
+        const priceIndex = headers.findIndex(h => h === "Price");
+        const imageIndex = headers.findIndex(h => h === "Image URL");
+        const statusIndex = headers.findIndex(h => h === "Status");
+        
+        const products = [];
+        for (let i = 1; i < rows.length; i++) {
+            if (!rows[i].trim()) continue;
+            const cols = rows[i].split(",");
+            let status = statusIndex !== -1 ? cols[statusIndex]?.trim().toLowerCase() : "active";
+            if (status === "delete" || status === "deleted") continue;
+            const name = nameIndex !== -1 ? cols[nameIndex]?.trim() : "منتج";
+            const price = priceIndex !== -1 ? parseFloat(cols[priceIndex]) : 0;
+            let image = imageIndex !== -1 ? cols[imageIndex]?.trim() : "";
+            if (!image) image = "https://via.placeholder.com/300x200?text=صورة";
+            if (name && price > 0) products.push({ name, price, image });
+        }
+        return products;
+    }
+    
+    function displayLatestProducts(products) {
+        const container = document.getElementById("latestProducts");
+        if (products.length === 0) {
+            container.innerHTML = `<div style="color:white; text-align:center;">لا توجد منتجات</div>`;
+            return;
+        }
+        
+        container.innerHTML = products.map(p => `
+            <div class="latest-product-card" onclick="window.location.href='products.html'">
+                <img class="latest-product-img" src="${p.image}" onerror="this.src='https://via.placeholder.com/300x200'">
+                <div class="latest-product-info">
+                    <div class="latest-product-name">${escapeHtml(p.name)}</div>
+                    <div class="latest-product-price">${p.price.toLocaleString()} ج.م</div>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, function(m) {
+            return m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;';
+        });
+    }
+    
+    // بدء التحميل والتحديث التلقائي
+    loadNews();
+    loadLatestProducts();
+    
+    setInterval(() => {
+        loadNews();
+        loadLatestProducts();
+    }, 30000);
+</script>
+</body>
+</html>

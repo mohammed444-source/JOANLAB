@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>تحميل الملفات - JOANLAB للمعدات الطبية</title>
+    <!-- خط Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', 'Segoe UI', sans-serif;
+        }
+        
+        body {
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* الخلفية المتحركة */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            overflow: hidden;
+        }
+        
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.6;
+            animation: floatGlow 12s infinite ease-in-out;
+        }
+        
+        .glow-1 { width: 400px; height: 400px; background: radial-gradient(circle, #667eea, #764ba2); top: -100px; left: -100px; animation-delay: 0s; }
+        .glow-2 { width: 500px; height: 500px; background: radial-gradient(circle, #f093fb, #f5576c); bottom: -150px; right: -150px; animation-delay: 3s; }
+        .glow-3 { width: 350px; height: 350px; background: radial-gradient(circle, #4facfe, #00f2fe); top: 50%; left: 50%; transform: translate(-50%, -50%); animation-delay: 6s; }
+        .glow-4 { width: 300px; height: 300px; background: radial-gradient(circle, #fa709a, #fee140); bottom: 20%; left: 20%; animation-delay: 2s; }
+        .glow-5 { width: 450px; height: 450px; background: radial-gradient(circle, #a8edea, #fed6e3); top: 30%; right: 15%; animation-delay: 4s; }
+        
+        @keyframes floatGlow {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+            33% { transform: translate(30px, -30px) scale(1.1); opacity: 0.6; }
+            66% { transform: translate(-20px, 20px) scale(0.9); opacity: 0.5; }
+        }
+        
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: moveGrid 20s linear infinite;
+        }
+        
+        @keyframes moveGrid {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(40px, 40px); }
+        }
+        
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* القائمة العلوية */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 60px;
+            padding: 10px 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .logo-nav {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-nav img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+            animation: pulse 2s infinite;
+        }
+        
+        .logo-nav span {
+            font-weight: 800;
+            color: #1e3a5f;
+            font-size: 1.2rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-links a {
+            color: #1e3a5f;
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-links a.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .nav-links a:hover {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .menu-toggle {
+            display: none;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        /* القائمة الجانبية */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            transition: 0.4s ease;
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 300px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(15px);
+            box-shadow: -5px 0 35px rgba(0,0,0,0.3);
+            z-index: 2001;
+            transition: 0.4s ease;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            border-radius: 30px 0 0 30px;
+        }
+        
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            color: #1e3a5f;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        
+        .sidebar-nav a.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .close-sidebar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+        }
+        
+        /* هيدر صفحة التحميل */
+        .download-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 60px;
+        }
+        
+        .download-header h1 {
+            color: #1e3a5f;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+        
+        .download-header p {
+            color: #4a627a;
+            font-size: 1.2rem;
+        }
+        
+        /* شريط البحث */
+        .search-container {
+            margin: 20px 0 30px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 60px;
+            padding: 5px 10px 5px 5px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .search-box input {
+            flex: 1;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 60px;
+            font-size: 1rem;
+            outline: none;
+            background: transparent;
+        }
+        
+        .search-box button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .search-box button:hover {
+            transform: scale(0.96);
+        }
+        
+        /* قائمة التحميل */
+        .download-list-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 40px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .download-list-title {
+            font-size: 1.5rem;
+            color: #1e3a5f;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .download-items {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .download-item {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 18px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        
+        .download-item:hover {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            transform: translateX(-5px);
+            border-color: rgba(255,255,255,0.3);
+        }
+        
+        .download-item:hover .download-name,
+        .download-item:hover .download-pages,
+        .download-item:hover .download-icon {
+            color: white;
+        }
+        
+        .download-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .download-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #764ba2;
+            font-size: 1.3rem;
+            transition: 0.3s;
+        }
+        
+        .download-item:hover .download-icon {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .download-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1e3a5f;
+            transition: 0.3s;
+        }
+        
+        .download-pages {
+            color: #764ba2;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.3s;
+        }
+        
+        .download-btn {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .download-btn:hover {
+            transform: scale(0.96);
+        }
+        
+        .download-item:hover .download-btn {
+            background: white;
+            color: #27ae60;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #4a627a;
+        }
+        
+        /* عدد النتائج */
+        .results-count {
+            margin-top: 15px;
+            text-align: left;
+            color: #4a627a;
+            font-size: 0.9rem;
+        }
+        
+        .refresh-note {
+            text-align: center;
+            margin-top: 20px;
+            color: rgba(255,255,255,0.6);
+            font-size: 0.8rem;
+        }
+        
+        /* الفوتر */
+        .footer {
+            margin-top: 60px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 40px;
+            padding: 35px 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        
+        .footer-section h4 {
+            color: #1e3a5f;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .footer-section p {
+            color: #4a627a;
+            line-height: 1.8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .footer-section i {
+            width: 30px;
+            color: #764ba2;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            color: #4a627a;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @media (max-width: 900px) {
+            .nav-links { display: none; }
+            .menu-toggle { display: block; }
+            .download-item { flex-direction: column; text-align: center; }
+            .download-info { justify-content: center; }
+        }
+        
+        @media (max-width: 600px) {
+            .download-header h1 { font-size: 1.8rem; }
+            .download-list-container { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="animated-bg">
+    <div class="glow-orb glow-1"></div>
+    <div class="glow-orb glow-2"></div>
+    <div class="glow-orb glow-3"></div>
+    <div class="glow-orb glow-4"></div>
+    <div class="glow-orb glow-5"></div>
+</div>
+<div class="grid-overlay"></div>
+
+<div class="container">
+    <!-- القائمة العلوية -->
+    <div class="navbar">
+        <div class="logo-nav">
+            <img src="https://i.servimg.com/u/f52/20/64/69/74/61838510.png" alt="logo">
+            <span>JOANLAB</span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html"><i class="fas fa-home"></i> Home</a>
+            <a href="products.html"><i class="fas fa-box"></i> Products</a>
+            <a href="news.html"><i class="fas fa-newspaper"></i> News</a>
+            <a href="about.html"><i class="fas fa-info-circle"></i> About us</a>
+            <a href="download.html" class="active"><i class="fas fa-download"></i> Download</a>
+            <a href="#contact"><i class="fas fa-envelope"></i> Contact us</a>
+        </div>
+        <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+    </div>
+    
+    <!-- القائمة الجانبية -->
+    <div class="sidebar-overlay" id="sidebarOverlay">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="https://i.servimg.com/u/f52/20/64/69/74/61838510.png" alt="logo" style="width:45px;">
+                <button class="close-sidebar" id="closeSidebar"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="sidebar-nav">
+                <a href="index.html"><i class="fas fa-home"></i> Home</a>
+                <a href="products.html"><i class="fas fa-box"></i> Products</a>
+                <a href="news.html"><i class="fas fa-newspaper"></i> News</a>
+                <a href="about.html"><i class="fas fa-info-circle"></i> About us</a>
+                <a href="download.html" class="active"><i class="fas fa-download"></i> Download</a>
+                <a href="#contact"><i class="fas fa-envelope"></i> Contact us</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- هيدر الصفحة -->
+    <div class="download-header">
+        <h1><i class="fas fa-download"></i> مركز التحميل</h1>
+        <p>تحميل كتالوجات المنتجات والنشرات التعريفية</p>
+    </div>
+    
+    <!-- شريط البحث -->
+    <div class="search-container">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 ابحث عن منتج...">
+            <button id="searchBtn"><i class="fas fa-search"></i> بحث</button>
+        </div>
+    </div>
+    
+    <!-- قائمة التحميل -->
+    <div class="download-list-container">
+        <div class="download-list-title">
+            <i class="fas fa-file-pdf"></i>
+            <span>ملفات PDF المتاحة للتحميل</span>
+        </div>
+        <div class="download-items" id="downloadItems">
+            <div style="text-align:center; padding:40px;">⏳ جاري تحميل الملفات...</div>
+        </div>
+        <div class="results-count" id="resultsCount"></div>
+    </div>
+    
+    <div class="refresh-note">
+        🔄 يتم تحديث قائمة الملفات تلقائياً كل 30 ثانية
+    </div>
+    
+    <!-- الفوتر -->
+    <div class="footer">
+        <div class="footer-section">
+            <h4><i class="fas fa-map-marker-alt"></i> العنوان في الصين</h4>
+            <p>JOANLAB Building, No.181 Gangfeng Road, Huzhou City, Zhejiang Province, China</p>
+        </div>
+        <div class="footer-section">
+            <h4><i class="fas fa-map-marker-alt"></i> العنوان في ليبيا</h4>
+            <p>طبرق - الميدان</p>
+        </div>
+        <div class="footer-section">
+            <h4><i class="fas fa-phone-alt"></i> التواصل</h4>
+            <p><i class="fas fa-phone"></i> <a href="tel:+218911358836">+218-911-358836</a></p>
+            <p><i class="fas fa-envelope"></i> <a href="mailto:moh@joanlab.com">moh@joanlab.com</a></p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2024 JOANLAB - متجر المعدات الطبية - جميع الحقوق محفوظة</p>
+    </div>
+</div>
+
+<script>
+    // ===== القائمة الجانبية =====
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const closeSidebar = document.getElementById('closeSidebar');
+    
+    function openSidebar() {
+        sidebarOverlay.style.right = '0';
+        sidebar.style.right = '0';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeSidebarFunc() {
+        sidebarOverlay.style.right = '-100%';
+        sidebar.style.right = '-320px';
+        document.body.style.overflow = '';
+    }
+    
+    menuToggle.addEventListener('click', openSidebar);
+    closeSidebar.addEventListener('click', closeSidebarFunc);
+    sidebarOverlay.addEventListener('click', (e) => { if (e.target === sidebarOverlay) closeSidebarFunc(); });
+    
+    // ===== إعدادات الروابط =====
+    // رابط CSV الخاص بشيت المنتجات (يحتوي على PDF URL)
+    const PRODUCTS_CSV_URL = "https://docs.google.com/spreadsheets/d/1iekZBtcncliCPijyhbeniDlvq9hhSm0GIZt7rH4hbBg/export?format=csv&gid=1456554791";
+    
+    let allProducts = [];
+    
+    // ===== جلب المنتجات =====
+    async function loadProducts() {
+        try {
+            const response = await fetch(PRODUCTS_CSV_URL, { cache: "no-store" });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const csvText = await response.text();
+            allProducts = parseProductsCSV(csvText);
+            displayDownloadItems(allProducts);
+        } catch (error) {
+            console.error("خطأ في تحميل المنتجات:", error);
+            document.getElementById("downloadItems").innerHTML = `
+                <div class="no-results">
+                    ⚠️ خطأ في تحميل المنتجات (${error.message})<br>
+                    <small>تأكد من نشر شيت المنتجات كـ CSV: File → Share → Publish to web → CSV</small>
+                </div>`;
+        }
+    }
+    
+    function parseProductsCSV(csv) {
+        const rows = csv.split(/\r?\n/);
+        if (rows.length < 2) return [];
+        
+        const headers = rows[0].split(",").map(h => h.trim());
+        const nameIndex = headers.findIndex(h => h === "Product Name");
+        const priceIndex = headers.findIndex(h => h === "Price");
+        const imageIndex = headers.findIndex(h => h === "Image URL");
+        const pdfIndex = headers.findIndex(h => h === "PDF URL");
+        const pagesIndex = headers.findIndex(h => h === "Pages"); // عمود عدد الصفحات
+        const statusIndex = headers.findIndex(h => h === "Status");
+        
+        const products = [];
+        for (let i = 1; i < rows.length; i++) {
+            if (!rows[i].trim()) continue;
+            const cols = rows[i].split(",");
+            
+            // التحقق من الحالة
+            let status = "active";
+            if (statusIndex !== -1 && cols[statusIndex]) {
+                status = cols[statusIndex].trim().toLowerCase();
+            }
+            if (status === "delete" || status === "deleted") continue;
+            
+            const name = nameIndex !== -1 ? cols[nameIndex]?.trim() : "منتج";
+            const price = priceIndex !== -1 ? parseFloat(cols[priceIndex]) : 0;
+            let image = imageIndex !== -1 ? cols[imageIndex]?.trim() : "";
+            let pdfUrl = pdfIndex !== -1 ? cols[pdfIndex]?.trim() : "";
+            let pages = pagesIndex !== -1 ? cols[pagesIndex]?.trim() : "غير محدد";
+            
+            if (!image) image = "https://via.placeholder.com/300x200?text=صورة";
+            
+            // نعرض فقط المنتجات التي لها رابط PDF
+            if (name && pdfUrl && pdfUrl !== "") {
+                products.push({ name, price, image, pdfUrl, pages });
+            }
+        }
+        return products;
+    }
+    
+    function displayDownloadItems(products) {
+        const container = document.getElementById("downloadItems");
+        const resultsCount = document.getElementById("resultsCount");
+        resultsCount.textContent = `📄 إجمالي الملفات المتاحة: ${products.length}`;
+        
+        if (products.length === 0) {
+            container.innerHTML = `<div class="no-results">📭 لا توجد ملفات PDF متاحة حالياً. سيتم إضافتها قريباً.</div>`;
+            return;
+        }
+        
+        container.innerHTML = products.map(product => `
+            <div class="download-item">
+                <div class="download-info">
+                    <div class="download-icon">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <div>
+                        <div class="download-name">${escapeHtml(product.name)}</div>
+                        <div class="download-pages">
+                            <i class="fas fa-file-alt"></i> عدد الصفحات: ${escapeHtml(product.pages)}
+                        </div>
+                    </div>
+                </div>
+                <button class="download-btn" onclick="downloadPDF('${escapeHtml(product.pdfUrl)}', '${escapeHtml(product.name)}')">
+                    <i class="fas fa-download"></i> تحميل PDF
+                </button>
+            </div>
+        `).join('');
+    }
+    
+    function downloadPDF(pdfUrl, productName) {
+        if (!pdfUrl || pdfUrl === "") {
+            alert(`⚠️ لا يوجد ملف PDF متاح لمنتج "${productName}" حالياً.`);
+            return;
+        }
+        // فتح الرابط في نافذة جديدة لتحميل الملف
+        window.open(pdfUrl, '_blank');
+    }
+    
+    function searchProducts() {
+        const searchTerm = document.getElementById("searchInput").value.trim().toLowerCase();
+        if (searchTerm === "") {
+            displayDownloadItems(allProducts);
+        } else {
+            const filtered = allProducts.filter(p => p.name.toLowerCase().includes(searchTerm));
+            displayDownloadItems(filtered);
+        }
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, function(m) {
+            return m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;';
+        });
+    }
+    
+    // ربط الأحداث
+    document.getElementById("searchBtn").addEventListener("click", searchProducts);
+    document.getElementById("searchInput").addEventListener("keyup", function(e) {
+        if (e.key === "Enter") searchProducts();
+    });
+    
+    // جعل دالة التحميل عامة
+    window.downloadPDF = downloadPDF;
+    
+    // بدء التحميل والتحديث التلقائي
+    loadProducts();
+    setInterval(loadProducts, 30000);
+</script>
+</body>
+</html>
